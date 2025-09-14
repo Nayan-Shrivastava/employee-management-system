@@ -34,7 +34,19 @@
       "options": {
         "targetName": "test"
       },
-      "exclude": ["apps/eams-e2e/**/*"]
+      "exclude": [
+        "apps/eams-e2e/**/*",
+        "apps/auth-service-e2e/**/*",
+        "apps/api-gateway-e2e/**/*",
+        "apps/absence-service-e2e/**/*"
+      ]
     }
-  ]
+  ],
+  "targetDefaults": {
+    "@nx/js:tsc": {
+      "cache": true,
+      "dependsOn": ["^build"],
+      "inputs": ["production", "^production"]
+    }
+  }
 }
