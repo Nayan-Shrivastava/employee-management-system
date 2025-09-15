@@ -3,13 +3,17 @@ import { AppModule } from './app.module';
 import { Transport } from '@nestjs/microservices';
 import { ValidationPipe } from '@nestjs/common';
 import { HttpToRpcExceptionFilter } from '@eams/common';
+import { ConfigService } from '@nestjs/config';
 
 async function bootstrap() {
+  const appContext = await NestFactory.createApplicationContext(AppModule);
+  const configService = appContext.get(ConfigService);
+
   const app = await NestFactory.createMicroservice(AppModule, {
     transport: Transport.TCP,
     options: {
-      host: process.env.AUTH_HOST ?? '127.0.0.1',
-      port: Number(process.env.AUTH_PORT ?? 4001),
+      host: configService.get<string>('AUTH_HOST', '127.0.0.1'),
+      port: configService.get<number>('AUTH_PORT', 4001),
     },
   });
 
@@ -17,9 +21,10 @@ async function bootstrap() {
   app.useGlobalFilters(new HttpToRpcExceptionFilter());
   await app.listen();
   console.log(
-    `Auth-service running on tcp://${process.env.AUTH_HOST ?? '127.0.0.1'}:${
-      process.env.AUTH_PORT ?? 4001
-    }`
+    `Auth-service running on tcp://${configService.get<string>(
+      'AUTH_HOST',
+      '127.0.0.1'
+    )}:${configService.get<string>('AUTH_HOST', '127.0.0.1')}`
   );
 }
 bootstrap();

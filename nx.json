@@ -34,12 +34,7 @@
       "options": {
         "targetName": "test"
       },
-      "exclude": [
-        "apps/eams-e2e/**/*",
-        "apps/auth-service-e2e/**/*",
-        "apps/api-gateway-e2e/**/*",
-        "apps/absence-service-e2e/**/*"
-      ]
+      "exclude": []
     }
   ],
   "targetDefaults": {
