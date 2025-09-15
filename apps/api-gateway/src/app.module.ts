@@ -6,6 +6,7 @@ import { APP_GUARD } from '@nestjs/core';
 import { AuthController } from './auth.controller';
 import { AbsenceController } from './absence.controller';
 import { JwtAuthGuard, RolesGuard } from '@eams/common';
+import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 
 @Module({
   imports: [
@@ -23,7 +24,17 @@ import { JwtAuthGuard, RolesGuard } from '@eams/common';
         signOptions: { expiresIn: '7d' },
       }),
     }),
-
+    // ✅ Same for ThrottlerModule
+    ThrottlerModule.forRootAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: (config: ConfigService) => [
+        {
+          ttl: config.get<number>('THROTTLE_TTL') || 60000,
+          limit: config.get<number>('THROTTLE_LIMIT') || 10,
+        },
+      ],
+    }),
     // ✅ Same for microservice clients
     ClientsModule.registerAsync([
       {
@@ -54,7 +65,11 @@ import { JwtAuthGuard, RolesGuard } from '@eams/common';
   ],
   controllers: [AuthController, AbsenceController],
   providers: [
-    // Global guards: JWT + Roles
+    // Global guards: throttler + JWT + Roles
+    {
+      provide: APP_GUARD,
+      useClass: ThrottlerGuard,
+    },
     {
       provide: APP_GUARD,
       useClass: JwtAuthGuard,
