@@ -44,7 +44,6 @@ A modern microservices-based Employee Absence Management System built with NestJ
 
 - User registration and login
 - JWT token generation and validation
-- Password hashing with bcrypt
 - Role-based access control
 
 ### Absence Service (Port 3002)
@@ -61,7 +60,6 @@ A modern microservices-based Employee Absence Management System built with NestJ
 - **Authentication**: JWT (JSON Web Tokens)
 - **Monorepo**: Nx
 - **Validation**: class-validator & class-transformer
-- **Password Hashing**: bcrypt
 - **Communication**: TCP Microservices
 - **Language**: TypeScript
 
