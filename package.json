@@ -5,7 +5,6 @@
   "scripts": {
     "start": "nx serve",
     "build": "nx run-many -t build",
-    "test": "nx test",
     "lint": "nx lint",
     "dev:all": "npm run dev:auth & npm run dev:gateway & npm run dev:absence",
     "dev:auth": "nx serve auth-service",
@@ -17,7 +16,10 @@
     "affected:test": "nx affected -t test",
     "affected:build": "nx affected -t build",
     "affected:lint": "nx affected -t lint",
-    "graph": "nx graph"
+    "graph": "nx graph",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:cov": "jest --coverage"
   },
   "private": true,
   "dependencies": {

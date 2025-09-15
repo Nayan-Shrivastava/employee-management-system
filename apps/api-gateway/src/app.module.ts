@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { ClientsModule, Transport } from '@nestjs/microservices';
 import { JwtModule } from '@nestjs/jwt';
 import { APP_GUARD } from '@nestjs/core';
@@ -9,29 +9,46 @@ import { JwtAuthGuard, RolesGuard } from '@eams/common';
 
 @Module({
   imports: [
-    ConfigModule.forRoot({ isGlobal: true }),
-    // JWT for validation on gateway (same secret as auth-service)
-    JwtModule.register({
-      secret: process.env.JWT_SECRET ?? 'supersecret',
-      signOptions: { expiresIn: '7d' },
+    ConfigModule.forRoot({
+      isGlobal: true,
+      envFilePath: ['.env'],
     }),
-    // Client proxies to communicate with microservices over TCP
-    ClientsModule.register([
+
+    // ✅ Use ConfigService with registerAsync
+    JwtModule.registerAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: (config: ConfigService) => ({
+        secret: config.get<string>('JWT_SECRET', 'supersecret'),
+        signOptions: { expiresIn: '7d' },
+      }),
+    }),
+
+    // ✅ Same for microservice clients
+    ClientsModule.registerAsync([
       {
         name: 'AUTH_SERVICE',
-        transport: Transport.TCP,
-        options: {
-          host: process.env.AUTH_HOST ?? '127.0.0.1',
-          port: Number(process.env.AUTH_PORT ?? 4001),
-        },
+        imports: [ConfigModule],
+        inject: [ConfigService],
+        useFactory: (config: ConfigService) => ({
+          transport: Transport.TCP,
+          options: {
+            host: config.get<string>('AUTH_HOST', '127.0.0.1'),
+            port: config.get<number>('AUTH_PORT', 4001),
+          },
+        }),
       },
       {
         name: 'ABSENCE_SERVICE',
-        transport: Transport.TCP,
-        options: {
-          host: process.env.ABSENCE_HOST ?? '127.0.0.1',
-          port: Number(process.env.ABSENCE_PORT ?? 4002),
-        },
+        imports: [ConfigModule],
+        inject: [ConfigService],
+        useFactory: (config: ConfigService) => ({
+          transport: Transport.TCP,
+          options: {
+            host: config.get<string>('ABSENCE_HOST', '127.0.0.1'),
+            port: config.get<number>('ABSENCE_PORT', 4002),
+          },
+        }),
       },
     ]),
   ],
