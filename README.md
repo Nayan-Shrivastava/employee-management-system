@@ -85,12 +85,13 @@ Create a `.env` file in the root directory:
 
 ```bash
 # JWT Configuration
-JWT_SECRET=your-super-secret-jwt-key-change-in-production
-
-
-# Application
-NODE_ENV=development
-LOG_LEVEL=debug
+DB_PATH=eams.sqlite
+ABSENCE_HOST='127.0.0.1'
+ABSENCE_PORT=3002
+JWT_SECRET=supersecret
+AUTH_HOST='127.0.0.1'
+AUTH_PORT=3001
+GATEWAY_PORT=3000
 ```
 
 ## 🚀 Getting Started
